@@ -42,4 +42,3 @@
 | ORM/ODM | Prisma (Highly Recommended) or Mongoose | Use an industry-standard library for database interaction. |
 | Real-Time | Socket.io |Mandatory for collaboration features. |
 | Deployment | Vercel/Netlify (FE) + Render/Railway (BE/DB) | Mandatory live deployment.
-

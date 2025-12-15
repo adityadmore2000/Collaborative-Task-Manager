@@ -1,6 +1,8 @@
 import express from "express";
 import cookieParser from "cookie-parser";
-import authRoutes from "./modules/auth/auth.routes.js"
+import authRoutes from "./modules/auth/auth.routes.js";
+import taskRoutes from "./modules/task/task.routes.js";
+
 import cors from "cors";
 import dotenv from "dotenv";
 dotenv.config();
@@ -14,5 +16,6 @@ app.use(cors({
     credentials:true
 }))
 app.use("/api/auth",authRoutes);
+app.use("/api/tasks",taskRoutes);
 
 export default app;

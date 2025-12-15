@@ -10,10 +10,15 @@ export async function requireAuth(
   try {
     const token = req.cookies.token;
     if (!token) {
-      return res.status(401).json({ user: null });
+      return res.status(401).json({ error: "Unauthorized: No token" });
     }
 
-    const secret = process.env.JWT_SECRET!;
+    const secret = process.env.JWT_SECRET;
+    if (!secret) {
+      console.error("JWT_SECRET is not set in environment variables");
+      return res.status(500).json({ error: "Server configuration error" });
+    }
+
     const payload = jwt.verify(token, secret) as { userId: string };
 
     const user = await prisma.user.findUnique({
@@ -22,14 +27,13 @@ export async function requireAuth(
     });
 
     if (!user) {
-      return res.status(401).json({ user: null });
+      return res.status(401).json({ error: "Unauthorized: User not found" });
     }
 
-    // attach user to request
-    (req as any).user = user;
-
+    req.user = user; // ✅ Now type-safe thanks to express.d.ts
     next();
-  } catch {
-    return res.status(401).json({ user: null });
+  } catch (error) {
+    console.error("Authentication error:", error);
+    return res.status(401).json({ error: "Invalid or expired token" });
   }
 }
