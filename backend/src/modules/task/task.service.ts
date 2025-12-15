@@ -1,5 +1,3 @@
-// backend/src/modules/task/task.service.ts
-// backend/src/modules/task/task.service.ts
 import type { CreateTaskInput } from "./task.types.js";
 import { createTask } from "./task.repository.js";
 

@@ -1,4 +1,3 @@
-// src/modules/auth/auth.routes.ts
 import { Router } from "express";
 import { signup, login } from "./auth.service.js";
 import { prisma } from "../../lib/prisma.js";

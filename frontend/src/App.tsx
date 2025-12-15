@@ -3,7 +3,7 @@ import Login from "./pages/Login"
 import Signup from "./pages/Signup"
 import Dashboard from "./pages/Dashboard"
 import { Protected } from "./components/Protected"
-import { AuthProvider } from "./context/AuthContent"
+import { AuthProvider } from "./context/AuthContext"
 
 function App() {
   return (
