@@ -1,7 +1,6 @@
 import { Router } from "express";
 import { signup, login } from "./auth.service.js";
 import { prisma } from "../../lib/prisma.js";
-import jwt from "jsonwebtoken";
 import { requireAuth } from "../../middlewares/requireAuth.js";
 
 const router = Router();
@@ -32,6 +31,30 @@ router.post("/login", async (req, res) => {
 
 router.get("/me", requireAuth, (req, res) => {
   res.json({ user: (req as any).user });
+});
+
+router.patch("/profile", requireAuth, async (req, res) => {
+  const { name } = req.body;
+  const userId = req.user.id;
+
+  if (!name || typeof name !== "string" || name.trim().length === 0) {
+    return res.status(400).json({ error: "Name is required" });
+  }
+
+  try {
+    const updatedUser = await prisma.user.update({
+      where: { id: userId },
+      data: { name: name.trim() },
+      select: { id: true, name: true, email: true },
+    });
+
+    req.user = updatedUser;
+
+    return res.json({ user: updatedUser });
+  } catch (error) {
+    console.error("Update profile error:", error);
+    return res.status(500).json({ error: "Failed to update profile" });
+  }
 });
 
 export default router;
