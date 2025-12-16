@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { createTaskService } from "./task.service.js";
+import { createTaskService,getUserTasksService } from "./task.service.js";
 import { requireAuth } from "../../middlewares/requireAuth.js";
 
 const router = Router();
@@ -7,7 +7,6 @@ const router = Router();
 router.post("/", requireAuth, async (req, res) => {
   const { title, description, dueDate, priority, assignedToId } = req.body;
 
-  // Basic validation
   if (!title || !dueDate || !priority) {
     return res.status(400).json({
       error: "Missing required fields: title, dueDate, and priority are required",
@@ -24,7 +23,7 @@ router.post("/", requireAuth, async (req, res) => {
       description: description || "",
       dueDate,
       priority,
-      creatorId: req.user.id, // ✅ safe now!
+      creatorId: req.user.id,
       assignedToId,
     });
 
@@ -32,6 +31,20 @@ router.post("/", requireAuth, async (req, res) => {
   } catch (error: any) {
     console.error("Create task error:", error);
     return res.status(400).json({ error: error.message || "Failed to create task" });
+  }
+});
+
+router.get("/me", requireAuth, async (req, res) => {
+  try {
+    const data = await getUserTasksService(req.user.id);
+    return res.json({
+      assignedToMe: data.assigned,
+      createdByMe: data.created,
+      overdue: data.overdue,
+    });
+  } catch (error) {
+    console.error("Fetch tasks error:", error);
+    return res.status(500).json({ error: "Failed to load tasks" });
   }
 });
 
