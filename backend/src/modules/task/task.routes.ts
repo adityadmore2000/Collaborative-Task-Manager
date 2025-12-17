@@ -1,6 +1,8 @@
 import { Router } from "express";
-import { createTaskService,getUserTasksService } from "./task.service.js";
+import { createTaskService, getUserTasksService } from "./task.service.js";
 import { requireAuth } from "../../middlewares/requireAuth.js";
+import { emitTaskUpdated } from "./task.repository.js";
+import {io} from "../../lib/socket.js";
 
 const router = Router();
 
@@ -26,7 +28,10 @@ router.post("/", requireAuth, async (req, res) => {
       creatorId: req.user.id,
       assignedToId,
     });
-
+    emitTaskUpdated(task);
+    if (task.assignedToId) {
+      io.to(task.assignedToId).emit("task:assigned", task);
+    }
     return res.status(201).json(task);
   } catch (error: any) {
     console.error("Create task error:", error);

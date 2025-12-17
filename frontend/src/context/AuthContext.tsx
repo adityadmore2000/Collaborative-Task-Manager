@@ -24,6 +24,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     try {
       const res = await me();
       setUser(res.data.user);
+      
     } catch (error) {
       console.error("Failed to refetch user:", error);
       setUser(null);

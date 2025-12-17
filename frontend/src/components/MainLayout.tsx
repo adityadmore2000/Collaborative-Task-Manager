@@ -1,6 +1,7 @@
 import { useState, useRef, useEffect } from "react";
 import { useAuth } from "../context/AuthContext";
 import { useNavigate } from "react-router-dom";
+import NotificationManager from "./NotificationManager";
 
 export default function MainLayout({ children }: { children: React.ReactNode }) {
   const { user } = useAuth();
@@ -35,6 +36,7 @@ export default function MainLayout({ children }: { children: React.ReactNode }) 
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Header */}
+      {user && <NotificationManager />}
       <header className="bg-white shadow-sm">
         <div className="max-w-6xl mx-auto px-4 py-3 flex justify-between items-center">
           <h1 className="text-xl font-bold text-gray-800">Task Manager</h1>

@@ -1,6 +1,10 @@
+
+import app from "./app.js";
+import { initSocket } from "./lib/socket.js";
 import dotenv from "dotenv";
 dotenv.config();
 
-import app from "./app.js";
 const PORT = process.env.PORT || 3000;
-app.listen(PORT,()=>{console.log(`Server Running on port ${PORT} `)});
+const server = app.listen(PORT,()=>{console.log(`Server Running on port ${PORT} `)});
+
+initSocket(server);

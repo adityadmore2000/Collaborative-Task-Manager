@@ -1,6 +1,12 @@
 import { useEffect, useState } from "react";
 import { getUserTasks, type UserTaskGroups } from "../api/tasks";
 import TaskCard from "./TaskCard";
+import type { Task } from "../api/tasks";
+import { getSocket } from "../lib/socket";
+
+const updateTaskInList = (list: Task[], updatedTask: Task) => {
+  return list.map(task => task.id === updatedTask.id ? updatedTask : task);
+};
 
 export default function UserDashboard() {
   const [data, setData] = useState<UserTaskGroups | null>(null);
@@ -13,7 +19,25 @@ export default function UserDashboard() {
     }).catch(() => {
       setLoading(false);
     });
+    const socket = getSocket();
+    if (socket) {
+      socket.on("task:updated", (updatedTask: Task) => {
+        setData(prev => {
+          if (!prev) return prev;
+          return {
+            assignedToMe: updateTaskInList(prev.assignedToMe, updatedTask),
+            createdByMe: updateTaskInList(prev.createdByMe, updatedTask),
+            overdue: updateTaskInList(prev.overdue, updatedTask),
+          };
+        });
+      });
+    }
+    return () => {
+      socket?.off("task:updated");
+    };
   }, []);
+
+  // 👇 Listen for real-time updates
 
   if (loading) {
     return <div className="text-center py-8">Loading your tasks...</div>;

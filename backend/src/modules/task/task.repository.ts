@@ -1,4 +1,5 @@
 import { prisma } from "../../lib/prisma.js";
+import { io } from "../../lib/socket.js"; // add this import
 
 export function createTask(data: {
     title: string
@@ -53,4 +54,16 @@ export async function findTasksForUser(userId: string) {
   ]);
 
   return { assigned, created, overdue };
+}
+
+export function emitTaskUpdated(task: any) {
+  const recipients = new Set<string>();
+  recipients.add(task.creatorId);
+  if (task.assignedToId) {
+    recipients.add(task.assignedToId);
+  }
+
+  recipients.forEach(userId => {
+    io.to(userId).emit("task:updated", task);
+  });
 }
